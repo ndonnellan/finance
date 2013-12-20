@@ -1,0 +1,3 @@
+class InvestmentAccount < Account
+  
+end
