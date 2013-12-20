@@ -109,7 +109,7 @@ class Person
 
   def print_account_changes
     print "change |"
-    @accounts.each {|a| printf "%#{spacing}.1f%%|", a.year_change*100.0 }
+    @accounts.each {|a| printf "%#{spacing-1}.1f%% |", a.year_change*100.0 }
     print "\n"
   end
 
