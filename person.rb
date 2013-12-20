@@ -42,11 +42,18 @@ class Person
     @accounts.each do |account|
       if tax = account.get_withheld_taxes
         tax_per_month = tax_per_month.esub tax
+        @taxes_paid = @taxes_paid.eadd tax
       end
     end
 
     total_taxes = tax_per_month.reduce(:+)
     @tax_account.balance -= total_taxes
+  end
+
+  def print_tax_rate
+    total_income = @taxable_income.reduce(:+)
+    total_tax = @taxes_paid.reduce(:+) + @tax_account.balance
+    printf "eff tax|%#{spacing-1}.1f%%\n", (total_tax / total_income * 100.0)
   end
 
   def pay_taxes
@@ -68,8 +75,11 @@ class Person
       @tax_account.balance = 0
     end
 
+    @taxable_income = [0]*12
+    @taxes_paid = [0]*12
+
     if @tax_account.balance < 0
-      puts "Tax warning! $#{@tax_account.balance} in unpaid taxes"
+      puts "Tax warning! $#{@tax_account.balance.round} in unpaid taxes"
     else
 
     end

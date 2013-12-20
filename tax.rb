@@ -19,17 +19,17 @@ TAX_SCHEDULE = [
 def compute_taxes(amount)
   tax = 0
   bracket = 0
-  remaining = amount
-  loop do 
+  while true 
     t0 = TAX_SCHEDULE[bracket][1]
     t1 = TAX_SCHEDULE[bracket+1][1]
+    if amount > t1
+      tax += TAX_SCHEDULE[bracket+1][0]/100.0 * (t1 - t0)
+    else
+      tax += TAX_SCHEDULE[bracket+1][0]/100.0 * (amount - t0)
+      break
+    end
 
-    d = [ remaining, t1 - t0 ].min
-    tax += TAX_SCHEDULE[bracket+1][0]/100.0 * d
-    remaining -= d
     bracket += 1
-    
-    break if (remaining > 0 && bracket < TAX_SCHEDULE.count)
   end 
 
   tax
