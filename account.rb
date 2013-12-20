@@ -1,12 +1,25 @@
-MONTHS_IN_YEAR = 12
-
+class Class
+  def monthly_action(*args)
+    class_eval %Q{
+      @account_actions ||= []
+      @account_actions += args
+    }
+  end
+end
 class Account
-  attr_accessor :name
+  attr_accessor :name, :year_change
+
   def initialize(amount, name="account")
+
     @balance = amount
     @name = name
     @interest_rate = 0.0
-    @period = 1.0 # month
+    @interest_period = 1.0 # month
+    @starting_balance = amount
+  end
+
+  def self.account_actions
+    @account_actions
   end
 
   def balance
@@ -25,7 +38,7 @@ class Account
     puts "#{self.name}|#{self.class}: #{msg}"
   end
 
-  def pay_interest(interest)
+  def pay_interest
     amount_earned = @owner.earns interest_this_period, self, :income
 
     # If the owner doesn't take all of the amount paid
@@ -37,7 +50,7 @@ class Account
   end
 
   def interest_this_period
-    @balance * @interest_rate/100.0 * @interest_period / MONTHS_IN_YEAR.to_f
+    @balance * @interest_rate/100.0 * @interest_period / 12.0
   end
 
 
@@ -57,22 +70,27 @@ class Account
 
   def settle(periods=1)
     periods.times do |p|
-      @account_actions.each { |a| self.send a }
+      if self.class.account_actions
+        self.class.account_actions.each { |a| self.send a }
+      end
     end
     self
   end
 
   def settle_year(years=1)
+    @year_change = if @starting_balance == 0
+      0
+    else
+      (@balance - @starting_balance) / @starting_balance
+    end
+
+    @starting_balance = @balance
     self
   end
 
-  def self.monthly_action(*args)
-    @account_actions ||= []
-    @account_actions += args
+  def get_withheld_taxes
+    nil
   end
-
-
-
 end
 
 class SavingsAccount < Account

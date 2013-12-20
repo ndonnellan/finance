@@ -32,6 +32,7 @@ def compute_taxes(amount)
     break if (remaining > 0 && bracket < TAX_SCHEDULE.count)
   end 
 
+  tax
 end
 
 def compute_monthly_taxes(monthly_amounts)

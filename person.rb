@@ -1,3 +1,4 @@
+COLUMNS = 15
 class Person
   attr_reader :accounts, :tax_account
 
@@ -5,7 +6,8 @@ class Person
     @name = name
     @taxable_income = [0]*12
     @taxes_paid = [0]*12
-    @accounts = []
+    @accounts = [Account.new(0, 'taxman')]
+    @tax_account = @accounts[0]
   end
 
   def earns(amount, payer, type=:income)
@@ -34,7 +36,7 @@ class Person
     account.owner = self
   end
 
-  def pay_taxes
+  def group_taxes
     tax_per_month = compute_monthly_taxes @taxable_income
 
     @accounts.each do |account|
@@ -44,9 +46,10 @@ class Person
     end
 
     total_taxes = tax_per_month.reduce(:+)
-    @tax_account ||= Account.new(0, 'taxman')
     @tax_account.balance -= total_taxes
+  end
 
+  def pay_taxes
     @accounts.each do |account|
       if account.class == CheckingAccount || account.class == SavingsAccount
         if account.balance <= @tax_account.balance
@@ -61,12 +64,45 @@ class Person
       break if @tax_account.balance >= 0
     end
 
+    if @tax_account.balance > -eps
+      @tax_account.balance = 0
+    end
+
     if @tax_account.balance < 0
       puts "Tax warning! $#{@tax_account.balance} in unpaid taxes"
+    else
+
     end
 
     self
   end
+
+  def max_account_name_length
+    @accounts.collect {|a| a.name.length }.max
+  end
+
+  def spacing
+    @spacing ||= [ max_account_name_length, COLUMNS].max
+  end
+
+  def print_account_names
+    print " month |"
+    @accounts.each {|a| printf "%#{spacing}s |", a.name }
+    print "\n"
+  end
+
+  def print_account_balances
+    printf "%6s |", $month+1
+    @accounts.each {|a| printf "%#{spacing}.0f |", a.balance }
+    print "\n"    
+  end
+
+  def print_account_changes
+    print "change |"
+    @accounts.each {|a| printf "%#{spacing}.1f%%|", a.year_change*100.0 }
+    print "\n"
+  end
+
 
 end
 
@@ -79,6 +115,6 @@ class Array
     self.zip(a2).map {|e| e.reduce(:-) }
   end
 
-  alias_method :element_wise_add, :eadd
-  alias_method :element_wise_sub, :esub
+  alias_method :eadd, :element_wise_add
+  alias_method :esub, :element_wise_sub
 end
