@@ -59,10 +59,10 @@ class Person
   def pay_taxes
     @accounts.each do |account|
       if account.class == CheckingAccount || account.class == SavingsAccount
-        if account.balance <= @tax_account.balance
+        if account.balance <= -@tax_account.balance
           t = Transaction.withdraw(:all)
         else
-          t = Transaction.withdraw(@tax_account.balance)
+          t = Transaction.withdraw(-@tax_account.balance)
         end
 
         t.from(account).depositInto(@tax_account).commit
