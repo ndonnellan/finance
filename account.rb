@@ -1,110 +1,65 @@
-class Class
-  def monthly_action(*args)
-    class_eval %Q{
-      @account_actions ||= []
-      @account_actions += args
-    }
-  end
-end
 class Account
-  attr_accessor :name, :year_change
+  attr_accessor :name
+  @@i = 0
+  def initialize(amount, options={})
 
-  def initialize(amount, name="account")
-
+    @name = options[:name] || "account #{@@i+=1}"
+    @flows = [amount]
     @balance = amount
-    @name = name
-    @interest_rate = 0.0
-    @interest_period = 1.0 # month
-    @starting_balance = amount
+    @taxable_income = 0
   end
 
-  def self.account_actions
-    @account_actions
+  def reset
+    @flows = [0]
+    @balance= 0
+    @taxable_income = 0
+  end
+
+  def add_flow(amount)
+    @balance += amount
+    @flows << amount
   end
 
   def balance
     @balance
   end
 
-  def balance=(amount)
-    @balance = amount
-  end
-
-  def owner=(person)
-    @owner = person
-  end
+  def taxable_income; @taxable_income; end
+  def zero_taxable_income; @taxable_income = 0; end
 
   def account_log(msg)
     puts "#{self.name}|#{self.class}: #{msg}"
   end
 
-  def pay_interest
-    amount_earned = @owner.earns interest_this_period, self, :income
+end
 
-    # If the owner doesn't take all of the amount paid
-    # default to accruing interest
-    if amount_earned > 0
-      @balance += amount_earned
-    end
-    self
+class InterestAccount < Account
+  def initialize(amount, options={})
+    super amount, options
+    @interest_rate = options[:rate] || 0.0
+    @interest_period = options[:period] || 1.0 # month
   end
 
-  def interest_this_period
-    @balance * @interest_rate/100.0 * @interest_period / 12.0
+  def accrue_interest(periods=1)
+    i = @interest_rate / 100.0 * periods * @interest_period / 12 * balance
+    transfer from:InifiniteAccount, to:self, amount:i
+    @taxable_income += i
+  end
+end
+
+class InifiniteAccount
+  def self.balance
+    raise "Cannot access balance of #{self}"
   end
 
-
-  def charge_fee(fee)
-    # Ask the owner for payment on fee
-    amount_owed = @owner.owes fee, self
-
-    # If the owner doesn't pay enough to cover the fee,
-    # subtract it from the account balance
-    # (i.e. default to taking fees out of own balance)
-    if amount_owed > 0
-      @balance -= amount_owed
-      account_log "Negative balance" if @balance < 0
-    end
-    self
-  end
-
-  def settle(periods=1)
-    periods.times do |p|
-      if self.class.account_actions
-        self.class.account_actions.each { |a| self.send a }
-      end
-    end
-    self
-  end
-
-  def settle_year(years=1)
-    @year_change = if @starting_balance == 0
-      0
-    else
-      (@balance - @starting_balance) / @starting_balance
-    end
-
-    @starting_balance = @balance
-    self
-  end
-
-  def get_withheld_taxes
+  def self.add_flow(amount)
     nil
   end
 end
 
-class SavingsAccount < Account
-  monthly_action :pay_interest
-  def initialize(amount, name, rate=0.5)
-    super amount, name
-    @interest_rate = rate
-  end
-end
-
-class CheckingAccount < Account
-  monthly_action :pay_interest
-  def initialize(amount, name, rate=0.05)
-    super amount, name
-    @interest_rate = rate
+class TaxAccount < Account
+  def get_tax_bill(taxable_income)
+    taxes_owed = compute_taxes(taxable_income)
+    taxes_owed - self.balance
   end
 end
