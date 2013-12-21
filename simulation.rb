@@ -14,7 +14,6 @@ class Simulation
 
   def run(months=12)
     months.times do |month|
-      puts month
       @monthly_actions.each { |ma| ma.call month }
 
       if (month+1) % 12 == 0

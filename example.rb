@@ -1,3 +1,4 @@
+require_relative '_overrides'
 require_relative 'tax'
 require_relative 'account'
 require_relative 'transaction'
@@ -29,13 +30,16 @@ sim.each_year do
 
   job.zero_taxable_income
   savings.zero_taxable_income
+
   printf "Earned: %6.0f\n", total_taxable_income
-  printf "Tax rate: %2.1f%%\n", irs.balance / total_taxable_income * 100.0
+  printf "Tax rate: %.1f%%\n", irs.balance / total_taxable_income * 100.0
   irs.reset
 end
 
 sim.run
 
 [job, checking, savings, irs].each do |acct|
-  puts "Account: #{acct.name} | #{acct.balance}"
+  change = acct.annual_change.to_pct_str '%.1f%%'
+
+  printf "Account: %10s | %6.0f (%s)\n", acct.name, acct.balance, change
 end

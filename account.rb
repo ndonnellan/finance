@@ -24,11 +24,24 @@ class Account
     @balance
   end
 
+  def balance_at(previous_period)
+    if @flows.count < previous_period
+      0
+    else
+      @flows[0..-previous_period].reduce(:+)
+    end
+  end
+
   def taxable_income; @taxable_income; end
   def zero_taxable_income; @taxable_income = 0; end
 
   def account_log(msg)
     puts "#{self.name}|#{self.class}: #{msg}"
+  end
+
+  def annual_change
+    prev_balance = balance_at(12)
+    prev_balance==0 ? 0 : balance / prev_balance
   end
 
 end
