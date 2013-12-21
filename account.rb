@@ -57,6 +57,7 @@ class InterestAccount < Account
     i = @interest_rate / 100.0 * periods * @interest_period / 12 * balance
     transfer from:InifiniteAccount, to:self, amount:i
     @taxable_income += i
+    i
   end
 end
 

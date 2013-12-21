@@ -4,22 +4,23 @@ require_relative 'account'
 require_relative 'transaction'
 require_relative 'job'
 require_relative 'simulation'
+require_relative 'log'
 
 
 checking = Account.new(3000, name:'checking')
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
 irs = TaxAccount.new(0, name:'taxman')
 job = Job.new(30000.0, name:'google')
-
 sim = Simulation.new
 
 sim.each_month do
 
-  job.earn
+  sim.log income:job.earn
   transfer from:job, to:irs, amount:job.estimated_taxes/12.0
   transfer_all from:job, to:checking
 
-  savings.accrue_interest
+  sim.log interest:savings.accrue_interest
+
 end
 
 sim.each_year do
@@ -31,15 +32,21 @@ sim.each_year do
   job.zero_taxable_income
   savings.zero_taxable_income
 
-  printf "Earned: %6.0f\n", total_taxable_income
-  printf "Tax rate: %.1f%%\n", irs.balance / total_taxable_income * 100.0
+  sim.log \
+    taxable_income: total_taxable_income, 
+    taxes:irs.balance,
+    rate:irs.balance / total_taxable_income * 100
   irs.reset
 end
 
-sim.run
+sim.run til:Time.new(2016)
 
-[job, checking, savings, irs].each do |acct|
-  change = acct.annual_change.to_pct_str '%.1f%%'
+# [job, checking, savings, irs].each do |acct|
+#   change = acct.annual_change.to_pct_str '%.1f%%'
 
-  printf "Account: %10s | %6.0f (%s)\n", acct.name, acct.balance, change
-end
+#   printf "Account: %10s | %6.0f (%s)\n", acct.name, acct.balance, change
+# end
+
+# printf "Earned: %6.0f\n", total_taxable_income
+#   printf "Tax rate: %.1f%%\n", irs.balance / total_taxable_income * 100.0
+sim.print_log('monthly')

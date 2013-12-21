@@ -4,9 +4,12 @@ class Job < Account
     @salary = salary
   end
 
+  def salary; @salary; end
+
   def earn
     add_flow s = @salary / 12.0
     @taxable_income += s
+    s
   end
 
   def estimated_taxes
