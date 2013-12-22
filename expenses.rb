@@ -15,5 +15,6 @@ class Expenses < Account
 
   def spend
     add_flow(-@total_monthly_expense)
+    @total_monthly_expense
   end
 end

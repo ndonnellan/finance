@@ -1,12 +1,4 @@
-require_relative '_overrides'
-require_relative 'tax'
-require_relative 'account'
-require_relative 'transaction'
-require_relative 'job'
-require_relative 'simulation'
-require_relative 'log'
-require_relative 'expenses'
-
+Dir.glob("./*.rb") { |file| require file }
 
 checking = Account.new(3000, name:'checking', min_balance:3000)
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
@@ -19,27 +11,31 @@ def savings_amount(acct)
   if acct.balance > acct.min_balance
     acct.balance - acct.min_balance
   else
-    0
+    0.0
   end
 end
 
 sim.each_month do
+  
+  income = job.earn
+  sim.log income:income.usd
 
-  sim.log income:job.earn
   transfer from:job, to:irs, amount:job.estimated_taxes/12.0
   transfer_all from:job, to:checking
-  expenses.spend
+
+  expense = expenses.spend
+  sim.log expense:expense.usd
+  sim.log net:(income - expense).usd
 
   transfer from:checking, to:expenses, amount:-expenses.balance
 
 
   transfer from:checking, to:savings, amount:savings_amount(checking)
-  sim.log interest:savings.accrue_interest
+  sim.log interest:savings.accrue_interest.usd
 
 end
 
 sim.each_year do
-
   total_taxable_income = collect :taxable_income, job, savings
   taxes = irs.get_tax_bill total_taxable_income
 
@@ -52,15 +48,15 @@ sim.each_year do
   savings.zero_taxable_income
 
   sim.log \
-    taxable_income: total_taxable_income, 
-    taxes:irs.balance,
-    rate:irs.balance / total_taxable_income * 100,
-    checking:checking.balance,
-    savings:savings.balance
+    taxable_income: total_taxable_income.usd, 
+    taxes:irs.balance.usd,
+    tax_rate:(irs.balance / total_taxable_income).pct,
+    checking:checking.balance.usd,
+    savings:savings.balance.usd
 
   irs.reset
 end
 
-sim.run til:Time.new(2050)
+sim.run
 
-sim.print_log('annual')
+sim.print_log('monthly')
