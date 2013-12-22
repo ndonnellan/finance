@@ -5,6 +5,20 @@ class Simulation
     @store = {}
     @log_month = true
     @events = []
+    @assets = []
+    @debts = []
+  end
+
+  def assets
+    @assets.reduce(0) {|s, a| s + a.balance }
+  end
+
+  def debts
+    @debts.reduce(0) {|s, d| s + d.balance }
+  end
+
+  def net_worth
+    assets - debts
   end
 
   def advance_month
@@ -55,21 +69,23 @@ class Simulation
     @log_level = ''
   end
 
-  def log(args)
+  def log(args, custom_store=nil)
+    store = custom_store || @store
+
     yr = @t.year
     mon = @t.month
-    @store[yr] ||= {}
+    store[yr] ||= {}
 
     accumulate = Proc.new {|k,ov,nv| ov + nv}
 
     case @log_level
     when 'year'
-      @store[yr].merge! args, &accumulate
+      store[yr].merge! args, &accumulate
     when 'month'
-      @store[yr][mon] ||= {}
-      @store[yr][mon].merge! args, &accumulate
+      store[yr][mon] ||= {}
+      store[yr][mon].merge! args, &accumulate
     else
-      @store.merge! args, &accumulate
+      store.merge! args, &accumulate
     end
   end
 
@@ -82,6 +98,27 @@ class Simulation
   end
 
 
+  class << self
+    def compare(options)
+      sims = options[:sims]
+
+      logs = [{}] * sims.count
+
+      sims.each_with_index do |sim, i|
+        sim.each_year do
+          sim.log(
+            {assets:sim.assets.usd,
+            debts:sim.debts.usd,
+            net_worth:sim.net_worth.usd}
+            )
+        end
+
+        sim.run options[:run_options]
+        logs[i] = sim.get_log
+      end
+      logs
+    end
+  end
 end
 
 
