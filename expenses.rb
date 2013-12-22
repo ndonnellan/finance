@@ -4,7 +4,7 @@ class Expenses < Account
       # Use BLS data to estimate expenses per month, minus
       # the category of personal savings/insurance 
       # (which is 10% in the US)
-      expenses = self.new(0)
+      expenses = self.new(income*0)
       expenses.set_monthly_expense(income * 49705.0 / 63685.0 * 0.90 / 12)
       expenses
     end

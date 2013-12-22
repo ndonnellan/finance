@@ -1,5 +1,5 @@
 class Class
-  def create_number_method(*args)
+  def dominant_number_method(*args)
     args.each do |method|
       class_eval %Q{
         def #{method}(val)
@@ -14,7 +14,24 @@ class Class
       }
     end
   end
-  def create_logical_method(*args)
+
+  def recessive_number_method(*args)
+    args.each do |method|
+      class_eval %Q{
+        def #{method}(val)
+          if val.class <= CustomNumber
+            val.number #{method} @number
+          elsif val.class <= Numeric
+            self.class.new(@number #{method} val)
+          else
+            raise_coercion_exception(val.class)
+          end
+        end
+      }
+    end
+  end
+
+  def logical_method(*args)
     args.each do |method|
       class_eval %Q{
         def #{method}(val)
@@ -32,15 +49,14 @@ class Class
 end
 
 class CustomNumber
-  create_number_method :+, :-, :*, :**, :/
-  create_logical_method :>, :<, :>=, :<=, :==
+  logical_method :>, :<, :>=, :<=, :==
 
   def initialize(num)
     unless num.class <= Numeric
       raise "Cannot cast #{num.class} to #{self.class}"
     end
 
-    @number = num.to_f
+    @number = num
   end
 
   def coerce(val)
@@ -61,21 +77,32 @@ class CustomNumber
   end
 end
 
+def add_commas(number_str)
+  number_str.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
+end
+
 class Usd < CustomNumber
+  dominant_number_method :+, :-, :*, :**, :/
   def to_s
-    i = self.floor
-    f = self - i
-    i_s = i.to_s.reverse.gsub(/(\d{3})/, '\1,').reverse
-    i_s + sprintf("%.2f", f)
+    i = @number.floor
+    f = @number - i
+    i_s = add_commas(i)
+    "$" + i_s + sprintf("%.2f", f).sub(/^0/,'')
   end
 end
 
 class Rate < CustomNumber
+  recessive_number_method :*, :/
+  def initialize(number)
+    number = number / 100.0
+    super number
+  end
+
   def to_s
-    pct = self * 100.0
+    pct = @number * 100.0
     i = pct.floor
     f = pct - i
-    i_s = i.to_s.reverse.gsub(/(\d{3})/, '\1,').reverse
-    i_s + sprintf("%.1f", f)
+    i_s = add_commas(i)
+    i_s + sprintf("%.2f%%", f).sub(/^0/,'')
   end
 end

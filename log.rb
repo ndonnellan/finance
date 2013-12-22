@@ -55,7 +55,7 @@ class Log
         if v.class == Hash
           " "*SPACING
         else
-          sprintf("%#{SPACING}.0f", v)
+          sprintf("%#{SPACING}s", v.to_s)
         end
       end.join(',') + "\n"
     end

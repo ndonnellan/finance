@@ -15,4 +15,8 @@ class Object
   def usd
     Usd.new(self)
   end
+
+  def ir
+    Rate.new(self)
+  end
 end
