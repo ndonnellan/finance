@@ -11,4 +11,8 @@ class Object
       n_str
     end
   end
+
+  def usd
+    Usd.new(self)
+  end
 end
