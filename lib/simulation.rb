@@ -4,6 +4,7 @@ class Simulation
     @yearly_actions = []
     @store = {}
     @log_month = true
+    @events = []
   end
 
   def advance_month
@@ -22,14 +23,26 @@ class Simulation
     @yearly_actions << block
   end
 
+  def add_event(event)
+    @events << event
+  end
+
   def run(options={})
     @t = options[:from] || Time.now
     tF = options[:til] || Time.new(@t.year+1,@t.month)
+
+    # Sort events by date so that they can be
+    # set in arbitrary order beforehand
+    @events.sort_by! {|e| e.date }
 
     @log_level = ''
     while @t < tF
       @log_level = 'month'
       advance_month
+
+      while @events.count > 0 && @events[0].date < @t
+        @events.shift.happen
+      end
 
       @monthly_actions.each { |ma| ma.call @t.month}
 
