@@ -1,20 +1,15 @@
-def add_commas(number_str)
-  number_str.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
+def add_commas(number)
+  number_parts = sprintf('%.2f',number).split(/\./)
+  front = number_parts[0].reverse.gsub(/(\d{3})(?=\d)/, '\1,').reverse
+  [front, number_parts[1]].join('.')
 end
 
 class Numeric
   def usd
-    i = self.floor
-    f = self - i
-    i_s = add_commas(i)
-    "$" + i_s + sprintf("%.2f", f).sub(/^0/,'')
+    "$" + add_commas(self)
   end
 
   def pct
-    pct = self * 100.0
-    i = pct.floor
-    f = pct - i
-    i_s = add_commas(i)
-    i_s + sprintf("%.2f%%", f).sub(/^0/,'')
+    add_commas(self * 100.0) + "%"
   end
 end
