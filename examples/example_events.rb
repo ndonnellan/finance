@@ -1,4 +1,4 @@
-Dir.glob("./*.rb") { |file| require file }
+require_relative '../init'
 
 checking = Account.new(3000, name:'checking', min_balance:3000)
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
@@ -32,6 +32,10 @@ sim.each_month do
   waterfall_transfer \
     priority:[checking, savings, credit_card], 
     to:expenses, amount:-expenses.balance
+
+  waterfall_transfer \
+    priority:[checking, savings], 
+    to:credit_card, amount:-credit_card.balance
 
 
   transfer from:checking, to:savings, amount:savings_amount(checking)

@@ -1,4 +1,4 @@
-Dir.glob("./*.rb") { |file| require file }
+require_relative '../init'
 
 checking = Account.new(3000, name:'checking', min_balance:3000)
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
