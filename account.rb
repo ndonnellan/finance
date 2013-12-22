@@ -6,14 +6,14 @@ class Account
     @name = options[:name] || "account #{@@i+=1}"
     @flows = [amount]
     @balance = amount
-    @taxable_income = amount.class.new(0)
-    @min_balance = options[:min_balance] || amount.class.new(0)
+    @taxable_income = 0.0
+    @min_balance = options[:min_balance] || 0.0
   end
 
   def reset
-    @balance *= 0
+    @balance *= 0.0
     @flows = [@balance]
-    @taxable_income *= 0
+    @taxable_income *= 0.0
   end
 
   def add_flow(amount)
@@ -54,7 +54,7 @@ end
 class InterestAccount < Account
   def initialize(amount, options={})
     super amount, options
-    @interest_rate = options[:rate] || 0.ir
+    @interest_rate = options[:rate]/100.0 || 0.0
     @interest_period = options[:period] || 1.0 # month
   end
 

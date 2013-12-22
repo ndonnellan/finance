@@ -1,5 +1,5 @@
 def inf
-  100000000000.usd
+  100000000000
 end
 
 def eps
@@ -7,20 +7,19 @@ def eps
 end
 
 TAX_SCHEDULE = [
-  [0.ir,      0.usd],
-  [10.ir,  8925.usd],
-  [15.ir,  36250.usd],
-  [25.ir,  87850.usd],
-  [28.ir,  183250.usd],
-  [33.ir,  398350.usd],
-  [35.ir,  400000.usd],
-  [39.60.ir,  inf]]
+  [0.0,      0.0],
+  [0.10,  8925.0],
+  [0.15,  36250.0],
+  [0.25,  87850.0],
+  [0.28,  183250.0],
+  [0.33,  398350.0],
+  [0.35,  400000.0],
+  [0.3960,  inf]]
 
 def compute_taxes(amount)
-  tax = amount*0
+  tax = amount*0.0
   bracket = 0
   while true 
-    puts amount
     t0 = TAX_SCHEDULE[bracket][1]
     t1 = TAX_SCHEDULE[bracket+1][1]
     if amount > t1
@@ -39,5 +38,5 @@ end
 def compute_monthly_taxes(monthly_amounts)
   s = monthly_amounts.reduce(:+)
   total_tax = compute_taxes(s)
-  return [total_tax/12.0]*12
+  return [total_tax/12.0]*12.0
 end

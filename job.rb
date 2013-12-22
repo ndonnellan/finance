@@ -1,6 +1,6 @@
 class Job < Account
   def initialize(salary, options={})
-    super salary*0, options
+    super salary*0.0, options
     @salary = salary
   end
 
