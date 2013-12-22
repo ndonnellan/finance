@@ -1,7 +1,7 @@
 def transfer(options)
-    options[:from].add_flow(-options[:amount])
-    options[:to].add_flow(options[:amount])
-    options[:amount]
+  options[:from].add_flow(-options[:amount])
+  options[:to].add_flow(options[:amount])
+  options[:amount]
 end
 
 def transfer_all(options)
@@ -24,4 +24,5 @@ def waterfall_transfer(options)
         to:options[:to]
     end
   end
+  transferred
 end

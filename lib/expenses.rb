@@ -9,12 +9,17 @@ class Expenses < Account
       expenses
     end
   end
+
   def set_monthly_expense(amount)
     @total_monthly_expense = amount
   end
 
   def spend
     add_flow(-@total_monthly_expense)
+    @total_monthly_expense
+  end
+
+  def estimate_expenses
     @total_monthly_expense
   end
 end

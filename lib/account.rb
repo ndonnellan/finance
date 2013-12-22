@@ -73,6 +73,21 @@ class CreditAccount < InterestAccount
   end  
 end
 
+class MortgageAccount < CreditAccount
+  def initialize(amount, options={})
+    super amount, options
+    @term = options[:term] || 1 # years
+    i = @interest_rate / 12.0
+    p = amount
+    n = @term * 12 / @interest_period
+    @payment = -(i * p * (1 + i)**n) /((1 + i)**n - 1)
+  end
+
+  def estimated_payment
+    @payment
+  end
+end
+
 class InifiniteAccount
   def self.balance
     raise "Cannot access balance of #{self}"

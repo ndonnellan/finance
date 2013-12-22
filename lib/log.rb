@@ -1,5 +1,5 @@
 class Log
-  SPACING = 15
+  SPACING = 13
   LEVEL_TAB = 2
   LEVEL_PREFIXES = ['total', 'year', 'month']
   class << self
