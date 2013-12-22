@@ -2,6 +2,7 @@ Dir.glob("./*.rb") { |file| require file }
 
 checking = Account.new(3000, name:'checking', min_balance:3000)
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
+credit_card = CreditAccount.new(0.0, name:'cc', rate:11.0)
 irs = TaxAccount.new(0, name:'taxman')
 job = Job.new(30000.0, name:'google')
 expenses = Expenses.bls_for_income(job.salary*2.5)
