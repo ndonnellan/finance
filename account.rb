@@ -7,6 +7,7 @@ class Account
     @flows = [amount]
     @balance = amount
     @taxable_income = 0
+    @min_balance = options[:min_balance] ||  0
   end
 
   def reset
@@ -22,6 +23,10 @@ class Account
 
   def balance
     @balance
+  end
+
+  def min_balance
+    @min_balance
   end
 
   def balance_at(previous_period)

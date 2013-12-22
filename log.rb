@@ -7,8 +7,9 @@ class Log
       
       print non_date_values_string(hash, prefix)
       should_print_header = true
-
-      hash.select {|k,v| k.class == Fixnum }.each do |k,v|
+      
+      date_items = hash.select {|k,v| k.class == Fixnum }
+      date_items.each do |k,v|
         @level += 1
 
         if @level <= @max_level
@@ -39,14 +40,18 @@ class Log
       recursive_print(log)
     end
 
+    def lvl_p(prefix)
+      " "*LEVEL_TAB*@level + sprintf("%#{SPACING}s",prefix) 
+    end
+
     def non_date_keys_string(hash, prefix="")
       keys = hash.keys.select {|k| k.class != Fixnum }.collect {|k| k.to_s }
-      " "*LEVEL_TAB*@level + sprintf("%#{SPACING}s",prefix) + keys.map{|s| sprintf("%#{SPACING}s",s)}.join(',') + "\n"
+      lvl_p(prefix) + keys.map{|s| sprintf("%#{SPACING}s",s)}.join(',') + "\n"
     end
 
     def non_date_values_string(hash, prefix="")
       values = hash.select {|k,v| k.class != Fixnum }.values
-      " "*LEVEL_TAB*@level + sprintf("%#{SPACING}s",prefix) + values.map do |v|
+      lvl_p(prefix) + values.map do |v|
         if v.class == Hash
           " "*SPACING
         else

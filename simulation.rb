@@ -33,7 +33,7 @@ class Simulation
 
       @monthly_actions.each { |ma| ma.call @t.month}
 
-      if (@t.month+1) % 12 == 0
+      if @t.month % 12 == 0
         @log_level = 'year'
         @yearly_actions.each { |ya| ya.call @t.year}
       end
