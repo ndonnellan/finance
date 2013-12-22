@@ -43,6 +43,10 @@ class CustomNumber
     @number = num.to_f
   end
 
+  def coerce(val)
+    [val, @number.coerce(val)[1]]
+  end
+
   def number
     @number
   end
@@ -53,7 +57,7 @@ class CustomNumber
 
   def method_missing(name, *args, &blk)
     ret = @number.send(name, *args, &blk)
-    ret.is_a?(Float) ? Usd.new(ret) : ret
+    # ret.is_a?(Float) ? Usd.new(ret) : ret
   end
 end
 
