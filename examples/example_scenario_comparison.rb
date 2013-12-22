@@ -9,4 +9,4 @@ logs = Simulation.compare \
   sims: [sim1, sim2],
   run_options: { til: Time.new(2020)}
 
-pp logs
+Log.format_multiple(logs, 'annual', 25)

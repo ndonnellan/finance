@@ -8,8 +8,8 @@ def savings_amount(acct)
 end
 
 class ExampleSim < Simulation
-  def initialize
-    super
+  def initialize(*args)
+    super(*args)
 
     @checking = Account.new(3000 + rand, name:'checking', min_balance:3000)
     @savings = InterestAccount.new(5000, name:'savings', rate:0.5)

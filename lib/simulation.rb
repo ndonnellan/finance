@@ -1,5 +1,8 @@
 class Simulation
-  def initialize
+  attr_reader :name
+  @@i = 0
+  def initialize(name=nil)
+    @name = name || "sim #{@@i+=1}"
     @monthly_actions = []
     @yearly_actions = []
     @store = {}
@@ -107,15 +110,16 @@ class Simulation
       sims.each_with_index do |sim, i|
         sim.each_year do
           sim.log(
-            {assets:sim.assets.usd,
-            debts:sim.debts.usd,
-            net_worth:sim.net_worth.usd}
+            {assets:sim.assets,
+            debts:sim.debts,
+            net_worth:sim.net_worth}
             )
         end
 
         sim.run options[:run_options]
         logs[i] = sim.get_log
       end
+
       logs
     end
   end

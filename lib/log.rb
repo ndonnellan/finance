@@ -3,8 +3,10 @@ class Log
   LEVEL_TAB = 2
   LEVEL_PREFIXES = ['total', 'year', 'month']
   class << self
+
     def recursive_print(hash, prefix="")
-      
+      @level ||= 0     
+      @max_level ||= 0 
       print non_date_values_string(hash, prefix)
       should_print_header = true
       
@@ -24,7 +26,8 @@ class Log
       end
 
     end
-    def format(log, type='annual')
+    def format(log, type='annual', spacing=nil)
+      @spacing = spacing
       @level = 0
         
       case type
@@ -40,22 +43,47 @@ class Log
       recursive_print(log)
     end
 
+    def format_multiple(logs, type='annual', spacing=nil)
+      combined_log = {}
+      logs.each do |log|
+        combined_log = nested_merge(combined_log, log) do |key, ov, nv|
+          ov = ov.class == String ? ov : ov.usd
+          ov + "|" + nv.usd
+        end
+      end
+      format(combined_log, type, spacing)
+    end
+
+    def nested_merge(hash1, hash2, &block)
+      hash1.merge(hash2) do |key, old_value, new_value|
+        if old_value.class == Hash
+          nested_merge(old_value, new_value, &block)
+        else
+          block.call(key, old_value, new_value)
+        end
+      end
+    end
+
+    def spacing
+      @spacing || SPACING
+    end
+
     def lvl_p(prefix)
-      " "*LEVEL_TAB*@level + sprintf("%#{SPACING}s",prefix) 
+      " "*LEVEL_TAB*@level + sprintf("%#{spacing}s",prefix) 
     end
 
     def non_date_keys_string(hash, prefix="")
       keys = hash.keys.select {|k| k.class != Fixnum }.collect {|k| k.to_s }
-      lvl_p(prefix) + keys.map{|s| sprintf("%#{SPACING}s",s)}.join(',') + "\n"
+      lvl_p(prefix) + keys.map{|s| sprintf("%#{spacing}s",s)}.join(',') + "\n"
     end
 
     def non_date_values_string(hash, prefix="")
       values = hash.select {|k,v| k.class != Fixnum }.values
       lvl_p(prefix) + values.map do |v|
         if v.class == Hash
-          " "*SPACING
+          " "*spacing
         else
-          sprintf("%#{SPACING}s", v.to_s)
+          sprintf("%#{spacing}s", v.to_s)
         end
       end.join(',') + "\n"
     end
