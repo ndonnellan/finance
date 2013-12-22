@@ -66,6 +66,13 @@ class InterestAccount < Account
   end
 end
 
+class CreditAccount < InterestAccount
+  def initialize(amount, options={})
+    super amount, options
+    @min_balance = -inf
+  end  
+end
+
 class InifiniteAccount
   def self.balance
     raise "Cannot access balance of #{self}"

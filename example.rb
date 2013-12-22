@@ -4,7 +4,7 @@ checking = Account.new(3000, name:'checking', min_balance:3000)
 savings = InterestAccount.new(5000, name:'savings', rate:0.5)
 irs = TaxAccount.new(0, name:'taxman')
 job = Job.new(30000.0, name:'google')
-expenses = Expenses.bls_for_income(job.salary)
+expenses = Expenses.bls_for_income(job.salary*2.5)
 sim = Simulation.new
 
 def savings_amount(acct)
@@ -27,11 +27,20 @@ sim.each_month do
   sim.log expense:expense.usd
   sim.log net:(income - expense).usd
 
-  transfer from:checking, to:expenses, amount:-expenses.balance
+  # transfer from:checking, to:expenses, amount:-expenses.balance
+  waterfall_transfer \
+    priority:[checking, savings, credit_card], 
+    to:expenses, amount:-expenses.balance
 
 
   transfer from:checking, to:savings, amount:savings_amount(checking)
-  sim.log interest:savings.accrue_interest.usd
+  sim.log \
+    interest:savings.accrue_interest.usd,
+    checking:checking.balance.usd,
+    savings:savings.balance.usd,
+    cc_interest:credit_card.accrue_interest.usd,
+    cc_balance:credit_card.balance.usd
+
 
 end
 
