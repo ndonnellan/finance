@@ -8,10 +8,11 @@ def savings_amount(acct)
 end
 
 class ExampleSim < Simulation
+  attr_reader :savings
   def initialize(*args)
     super(*args)
 
-    @checking = Account.new(3000 + rand, name:'checking', min_balance:3000)
+    @checking = Account.new(3000, name:'checking', min_balance:3000)
     @savings = InterestAccount.new(5000, name:'savings', rate:0.5)
     @credit_card = CreditAccount.new(0.0, name:'cc', rate:11.0)
 
@@ -55,6 +56,7 @@ class ExampleSim < Simulation
     self.each_month do
       
       income = @job.earn
+      @savings.accrue_interest
       @tasks[:withhold_taxes].call
       @tasks[:get_paycheck].call  
 

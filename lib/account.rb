@@ -58,6 +58,10 @@ class InterestAccount < Account
     @interest_period = options[:period] || 1.0 # month
   end
 
+  def rate=(val)
+    @interest_rate = val/100.0
+  end
+
   def accrue_interest(periods=1)
     i = @interest_rate * periods * @interest_period / 12 * balance
     transfer from:InifiniteAccount, to:self, amount:i

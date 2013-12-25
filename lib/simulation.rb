@@ -110,14 +110,29 @@ class Simulation
       sims.each_with_index do |sim, i|
         sim.each_year do
           sim.log(
-            {assets:sim.assets,
-            debts:sim.debts,
-            net_worth:sim.net_worth}
+            {assets:Dollar.new(sim.assets),
+            debts:Dollar.new(sim.debts),
+            savings:Dollar.new(sim.savings.balance),
+            net_worth:Dollar.new(sim.net_worth) }
             )
         end
 
         sim.run options[:run_options]
         logs[i] = sim.get_log
+      end
+
+      Log.format_multiple(logs, 'annual', 25)
+
+      years = logs[0].keys.select {|k| k.class == Fixnum }
+      last_year = years.sort[-1]
+
+      end_of_period_logs = logs.collect do |log|
+        log[last_year].select {|k, v| k.class != Fixnum }
+      end
+
+      Log.format_summary(end_of_period_logs, 'annual', 25) do |a|
+        max_value = a.max
+        a.map {|e| Rate.new((e - max_value) / max_value).to_s }.join(" | ")
       end
 
       logs

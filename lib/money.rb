@@ -13,3 +13,36 @@ class Numeric
     add_commas(self * 100.0) + "%"
   end
 end
+
+module FloatInterface
+  def initialize(number)
+    @number = number
+  end
+
+  def coerce(val)
+    [val, @number]
+  end
+
+  def <=>(val); @number<=>val;  end
+  def >(val);   @number>val;    end
+  def <(val);   @number<val;    end
+  def ==(val);  @number==val;   end
+  def -(val); @number - val; end
+  def +(val); @number + val; end
+end
+
+class Dollar
+  include FloatInterface
+
+  def to_s
+    @number.usd
+  end
+end
+
+class Rate
+  include FloatInterface
+
+  def to_s
+    @number.pct
+  end
+end

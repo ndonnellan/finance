@@ -47,10 +47,24 @@ class Log
       combined_log = {}
       logs.each do |log|
         combined_log = nested_merge(combined_log, log) do |key, ov, nv|
-          ov = ov.class == String ? ov : ov.usd
-          ov + "|" + nv.usd
+          ov = ov.class == Array ? ov : [ov]
+          ov << nv
         end
       end
+      format(combined_log, type, spacing)
+    end
+
+    def format_summary(logs, type='annual', spacing=nil, &block)
+      combined_log = {}
+      logs.each do |log|
+        combined_log = nested_merge(combined_log, log) do |key, ov, nv|
+          ov = ov.class == Array ? ov : [ov]
+          ov << nv
+        end
+      end
+
+      @array_handler = block
+
       format(combined_log, type, spacing)
     end
 
@@ -82,6 +96,12 @@ class Log
       lvl_p(prefix) + values.map do |v|
         if v.class == Hash
           " "*spacing
+        elsif v.class == Array
+          if @array_handler
+            sprintf("%#{spacing}s", @array_handler.call(v).to_s )
+          else
+            sprintf("%#{spacing}s", v.map {|e| e.to_s }.join("| "))
+          end
         else
           sprintf("%#{spacing}s", v.to_s)
         end
