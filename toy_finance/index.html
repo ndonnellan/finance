@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="./nvd3/src/nv.d3.css" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+  overflow-y:scroll;
+}
+
+text {
+  font: 12px sans-serif;
+}
+
+svg {
+  display: block;
+}
+
+#chart1 svg {
+  height: 500px;
+  min-width: 200px;
+  min-height: 100px;
+/*
+  margin: 50px;
+  Minimum height and width is a good idea to prevent negative SVG dimensions...
+  For example width should be =< margin.left + margin.right + 1,
+  of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
+*/
+
+}
+#chart1 {
+  margin-top: 20px;
+  margin-left: 10px;
+}
+</style>
+<body class='with-3d-shadow with-transitions'>
+
+<div class="input">
+  House Price($): <input id="house-price" type="text" value="200000" data-min="50000" data-max="1000000" data-step="5000"></input>
+
+  <div id="house-price-slider" class="slider"></div>
+</div>
+<div class="input">
+  Equivalent Rent($/mo): <input id="equiv-rent" type="text" value="1500"></input>
+</div>
+<div class="input">
+  Down Payment (%): <input id="down-payment" type="text" value="20" data-min="0" data-max="100" data-step="5"></input>
+  <div id="down-payment-slider" class="slider"></div>
+</div>
+<div class="input">
+  30yr Mortg. APR(%): <input id="rate-30yr" type="text" value="4.5"></input>
+</div>
+<div class="input">
+  Closing cost, buy (%): <input id="closing-costs-buy" type="text" value="3"></input>
+</div>
+<div class="input">
+  Closing cost, sell (%): <input id="closing-costs-sell" type="text" value="5"></input>
+</div>
+<div class="input">
+  Property Taxes (%): <input id="tax-rate" type="text" value="1.35"></input>
+</div>
+<div class="input">
+  Maintenance/Utils (%): <input id="maintenance-rate" type="text" value="1.5"></input>
+</div>
+<div class="input">
+  Investment yield (%): <input id="investment-rate" type="text" value="7"></input>
+</div>
+<div class="input">
+  Appreciation (%/yr): <input id="appreciation-rate" type="text" value="3"></input>
+</div>
+<div class="input">
+  Term(years) : <input id="number-years" type="text" value="30"></input>
+</div>
+<div class="input">
+  Display(years) : <input id="disp-years" type="text" value="10"></input>
+</div>
+<div>
+  <p id="monthly-payment"></p>
+</div>
+
+
+<div id="chart1" >
+  <svg style="height: 500px;"></svg>
+</div>
+
+
+
+<script src="./jquery.js"></script>
+<script src="./jquery-ui/js/jquery-ui-1.10.3.custom.js"></script>
+<link rel="stylesheet" type='text/css' href="./jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.css"></link>
+
+<link href="./styles.css" type='text.css' rel='stylesheet'>
+<script src="./d3.v3/d3.v3.js"></script>
+<script src="./nvd3/nv.d3.js"></script>
+<script src="./nvd3/src/tooltip.js"></script>
+<script src="./nvd3/src/utils.js"></script>
+<script src="./nvd3/src/interactiveLayer.js"></script>
+<script src="./nvd3/src/models/legend.js"></script>
+<script src="./nvd3/src/models/axis.js"></script>
+<script src="./nvd3/src/models/scatter.js"></script>
+<script src="./nvd3/src/models/line.js"></script>
+<script src="./nvd3/src/models/lineChart.js"></script>
+<script src="./main.js"></script>
