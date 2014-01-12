@@ -127,7 +127,12 @@ function financeData() {
   var net_owner_balances = [getOwnerNetBalance(0)];
   
   var calcPayment = loanPayment(loan_balances[0], params['number-years'], params['rate-30yr']);
-  $("#monthly-payment").text("Monthly Payment: " + Math.round(calcPayment(loan_balances[0])));
+
+  $("#monthly-payment").text("Est Payment: " + Math.round(calcPayment(loan_balances[0])));
+
+  var monthly_total = Math.round(calcPayment(loan_balances[0]) + houseValue(0) * params['tax-rate']/100.0/12 + houseValue(0) * params['maintenance-rate']/100.0/12);
+
+  $("#monthly-payment-total").text("Est Payment (w/taxes and fees): " + monthly_total);
 
   var irr = params['investment-rate']/100.0/12;
   var ib = 0, io = 0, irent = 0;
@@ -136,7 +141,8 @@ function financeData() {
 
     loan_payment = calcPayment(loan_balances.last());
 
-    rent_payment = params['equiv-rent'];
+    rent_payment = params['equiv-rent'] * Math.pow( 1 + params['appreciation-rate']/100.0/12, t / 12.0);
+
     maintenance = houseValue(t) * params['maintenance-rate']/100.0/12;
 
     taxes = houseValue(t) * params['tax-rate']/100.0/12;
