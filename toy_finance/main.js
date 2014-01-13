@@ -182,7 +182,7 @@ function financeData() {
 
     loan_payment = calcPayment(loan_balances.last());
 
-    rent_payment = params['equiv-rent'] * Math.pow( 1 + params['appreciation-rate']/100.0/12, t / 12.0);
+    rent_payment = params['equiv-rent'] * Math.pow( 1 + params['appreciation-rate']/100.0/12, t);
 
     maintenance = houseValue(t) * params['maintenance-rate']/100.0/12;
 
@@ -204,12 +204,13 @@ function financeData() {
       getOwnerNetBalance(t));
   }
 
-  var a = [], b = [], c = [], d = [];
+  var a = [], b = [], c = [], d = [], e = [];
   for (t=0; t<params['disp-years']*12; t++){
     a.push({x:t/12.0, y:loan_balances[t]});
     b.push({x:t/12.0, y:invest_owner_balances[t]});
     c.push({x:t/12.0, y:invest_renter_balances[t]});
     d.push({x:t/12.0, y:net_owner_balances[t]});
+    e.push({x:t/12.0, y:net_owner_balances[t] - invest_renter_balances[t]});
   }
 
   return [
@@ -232,6 +233,12 @@ function financeData() {
       values: d,
       key: "Net Owner Position",
       color: "#667711"
+    },
+    {
+      area: true,
+      values: e,
+      key: "Buy minus Rent",
+      color: "red"
     }
   ];
 }
