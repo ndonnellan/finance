@@ -1,11 +1,55 @@
 // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
+Array.prototype.last = function() {
+  return this[this.length - 1];
+};
+
+var input_data = {
+  "house-price":  [200000, 50000, 1000000, 5000, "House Price($)"],
+  "equiv-rent":   [1500, 200, 5000, 100, "Rent ($/mo)"],
+  "down-payment": [20, 0, 100, 5, "Down (%)"],
+  "rate-30yr":    [4.5, 3, 10, 0.2, "APR (%)"],
+  "closing-costs-buy":  [3, 0, 6, 0.2, "Closing costs/buy (%)"],
+  "closing-costs-sell": [5, 0, 6, 0.2, "Closing costs/sell (%)"],
+  "tax-rate":     [1.35, 0, 4, 0.1, "Tax rate (%)"],
+  "maintenance-rate":   [1.5, 0, 3, 0.1, "Maintenance/Other (%)"],
+  "investment-rate":    [7, 0, 20, 0.2, "IRR (%)"],
+  "appreciation-rate":  [3, -10, 10, 0.2, "Appreciation (%/yr)"],
+  "number-years":       [30, 5, 30, 1, "Term (years)"],
+  "disp-years": [10, 5, 50, 1, "Display (years)"]
+};
+
+(function() {
+  var input_group = $("#input-group");
+
+  for (var key in input_data) {
+    input_group.append(
+      '<tr>' +
+      '<td><div class="input">' +
+      input_data[key].last() + ': ' + '</td>' +
+      '<td><input id=' +
+      key + ' ' +
+      'type="text" ' +
+      'value="' + input_data[key][0] + '" ' +
+      'data-min="' + input_data[key][1] + '" ' +
+      'data-max="' + input_data[key][2] + '" ' +
+      'data-step="' + input_data[key][3] + '" ' +
+      '></input></td>' +
+      '<td><div id="' + key + '-slider" class="slider"></div>' +
+      '</div></td>' +
+      '</td></tr>'
+      );
+  }
+})();
+
 var chart;
+
 var allInputs = $(":input");
 
 var params = {};
 var sliderChangeFun = function(key){
   return function(event, ui) {
     $("#" + key).val(ui.value);
+    params[key] = ui.value;
     updateChart();
   };
 };
@@ -18,10 +62,10 @@ var sliderChangeFun = function(key){
     possible_slider = $("#" + key + "-slider");
     if (possible_slider !== undefined && possible_slider.length !== 0){
       possible_slider.slider({
-        min: parseInt(parent.attributes['data-min'].value, 10),
-        max: parseInt(parent.attributes['data-max'].value, 10),
-        value: parseInt(parent.value, 10),
-        step: parseInt(parent.attributes['data-step'].value, 10),
+        min: parseFloat(parent.attributes['data-min'].value),
+        max: parseFloat(parent.attributes['data-max'].value),
+        value: parseFloat(parent.value),
+        step: parseFloat(parent.attributes['data-step'].value),
         slide: sliderChangeFun(key)
       });
     }
@@ -37,7 +81,6 @@ function loadParams(){
 }
 
 var updateChart = function(){
-  loadParams();
 
   d3.select('#chart1 svg')
     .datum(financeData())
@@ -98,9 +141,7 @@ function loanPayment(initial_balance, term, rate) {
   };
 }
 
-Array.prototype.last = function() {
-  return this[this.length - 1];
-};
+
 
 function financeData() {
   

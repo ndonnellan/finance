@@ -2,3 +2,11 @@
   display: inline-block;
   width: 200px;
 }
+
+table {
+  text-align: right;
+}
+
+.right-column {
+  float: right;
+}
